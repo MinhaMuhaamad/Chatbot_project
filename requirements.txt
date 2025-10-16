@@ -1,0 +1,11 @@
+# Use PyTorch CPU wheels from official index and pin to a compatible version
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==1.13.1+cpu
+
+streamlit>=1.20
+numpy>=1.21
+pandas>=1.3
+scikit-learn>=1.0
+tqdm>=4.64
+matplotlib>=3.5
+nltk>=3.6
