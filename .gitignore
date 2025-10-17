@@ -20,9 +20,8 @@ env/
 *.pt
 *.pth
 *.bin
-best_model.pt
-vocab.pkl
-vocab*.pkl
+
+
 
 # Datasets / large files
 /data/
