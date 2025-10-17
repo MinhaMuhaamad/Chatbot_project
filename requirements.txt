@@ -1,7 +1,4 @@
-# Use PyTorch CPU wheels from official index and pin to a compatible version
---extra-index-url https://download.pytorch.org/whl/cpu
-torch==1.13.1+cpu
-
+# other runtime deps (install torch separately in setup.sh)
 streamlit>=1.20
 numpy>=1.21
 pandas>=1.3
