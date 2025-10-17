@@ -22,9 +22,11 @@ st.markdown("""
 * {
     color: white !important;
 }
-body {
-    background-color: #0D1117;
+html, body {
+    background-color: #0D1117 !important;
     color: white;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 .stApp {
     background-color: #0D1117;
@@ -129,9 +131,47 @@ label {
     background-color: #161B22;
     margin-bottom: 1em;
     color: white;
+    border: 1px solid #30363D;
 }
 .chat-container * {
     color: white !important;
+}
+.chat-history {
+    background-color: #161B22;
+    border-radius: 15px;
+    padding: 1.5em;
+    border: 1px solid #30363D;
+    max-height: 500px;
+    overflow-y: auto;
+    margin-top: 1em;
+}
+.chat-message {
+    margin-bottom: 1.2em;
+    padding: 1em;
+    border-radius: 10px;
+    background-color: #0D1117;
+    border-left: 4px solid #238636;
+}
+.chat-message.user {
+    border-left-color: #58A6FF;
+    background-color: #0D1117;
+}
+.chat-message.bot {
+    border-left-color: #238636;
+    background-color: #0D1117;
+}
+.chat-message-label {
+    font-weight: 600;
+    font-size: 0.9em;
+    color: #58A6FF;
+    margin-bottom: 0.5em;
+}
+.chat-message.bot .chat-message-label {
+    color: #238636;
+}
+.chat-message-text {
+    color: white;
+    line-height: 1.5;
 }
 div[data-testid="stMarkdownContainer"] {
     color: white !important;
@@ -468,6 +508,15 @@ st.sidebar.markdown(model_status)
 st.sidebar.divider()
 st.sidebar.info("Your AI companion trained to respond with empathy 💖")
 
+# Initialize session state for chat history
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+# Clear chat button
+if st.sidebar.button("🗑️ Clear Chat History", use_container_width=True):
+    st.session_state.chat_history = []
+    st.rerun()
+
 st.title("💬 Empathetic Chatbot")
 st.markdown("Ask, vent, or share — this chatbot understands your emotions")
 
@@ -518,6 +567,15 @@ if st.button("💬 Generate Response", use_container_width=True):
             top_k=top_k
         )
     
+    # Add to chat history
+    st.session_state.chat_history.append({
+        "emotion": emotion,
+        "situation": situation,
+        "user": customer_text,
+        "bot": response,
+        "method": decoding
+    })
+    
     st.success("Here's what I'd say:")
     st.markdown(f"""
     <div class="chat-container">
@@ -534,6 +592,35 @@ if st.button("💬 Generate Response", use_container_width=True):
         st.metric("Response Length", len(response.split()))
     with col_stats3:
         st.metric("Temperature", temperature)
+
+# Display chat history
+if st.session_state.chat_history:
+    st.markdown("---")
+    st.subheader("💬 Chat History")
+    
+    st.markdown("""
+    <div class="chat-history">
+    """, unsafe_allow_html=True)
+    
+    for i, chat in enumerate(reversed(st.session_state.chat_history)):
+        st.markdown(f"""
+        <div class="chat-message user">
+            <div class="chat-message-label">👤 You (Emotion: {chat['emotion']})</div>
+            <div class="chat-message-text">{chat['user']}</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown(f"""
+        <div class="chat-message bot">
+            <div class="chat-message-label">🤖 Chatbot (Method: {chat['method'].upper()})</div>
+            <div class="chat-message-text">{chat['bot']}</div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        if i < len(st.session_state.chat_history) - 1:
+            st.markdown("---", unsafe_allow_html=True)
+    
+    st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("---")
 st.caption("Built with PyTorch + Streamlit | Empathetic Chatbot")
